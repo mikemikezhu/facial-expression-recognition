@@ -19,6 +19,9 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# Visual Studio Code
+.vscode/
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

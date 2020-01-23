@@ -1,2 +1,5 @@
 numpy
 Pillow
+matplotlib
+pylint
+autopep8
