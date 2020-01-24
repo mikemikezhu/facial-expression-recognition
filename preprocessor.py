@@ -2,44 +2,57 @@ from PIL import Image
 import os
 import imghdr
 import numpy
+import csv
 
+# Constants
 TRAINING_DATA_DIRECTORY = 'TrainingDataSelected/'
+TRAIN_CSV_FILE = 'train.csv'
+TRAIN_CSV_WRITE_MODE = 'w'
+TRAIN_DATA_IMAGE_TYPE = 'jpeg'
 
-facial_expression_labels = {
+FACIAL_EXPRESSION_LABELS = {
     'Happy': '0',
     'Sad': '1',
     'Surprise': '2'
 }
 
 
-def load_data():
-    """Load facial expression dataset.
-    # Returns
-        Tuple of Numpy arrays: `(x_train, y_train)`.
-    """
+class Preprocessor:
 
-    images = []
-    labels = []
+    def preprocess_data(self):
+        """Preprocess facial expression dataset.
+        This function will save training data to train.csv in the directory.
+        train.csv contains two columns:
+        - Facial expression label
+        - Numpy array of facial expression image file (48 x 48)
+        """
+        with open(TRAIN_CSV_FILE, mode=TRAIN_CSV_WRITE_MODE) as train:
 
-    # Iterate through training image data
-    with os.scandir(TRAINING_DATA_DIRECTORY) as entries:
+            # Create train writer
+            train_writer = csv.writer(train)
 
-        for entry in entries:
-            path = entry.path
-            file_type = imghdr.what(path)
+            # Iterate through training image data
+            with os.scandir(TRAINING_DATA_DIRECTORY) as entries:
 
-            if file_type == 'jpeg':
-                
-                image_file = Image.open(path)
-                image = numpy.array(image_file)
-                images.append(image)
+                for entry in entries:
+                    path = entry.path
+                    file_type = imghdr.what(path)
 
-                name = entry.name
-                facial_expression_name = name.split('_')[0]
-                label = facial_expression_labels[facial_expression_name]
-                labels.append(label)
-    
-    x_train = numpy.array(images)
-    y_train = numpy.array(labels)
+                    if file_type == TRAIN_DATA_IMAGE_TYPE:
 
-    return (x_train, y_train)
+                        # Label
+                        name = entry.name
+                        facial_expression_name = name.split('_')[0]
+                        label = FACIAL_EXPRESSION_LABELS[facial_expression_name]
+
+                        # Image file
+                        image_file = Image.open(path)
+                        image = numpy.array(image_file)
+
+                        # Write to CSV file
+                        row = [label, image]
+                        train_writer.writerow(row)
+
+# Preprocess data
+preprocessor = Preprocessor()
+preprocessor.preprocess_data()
