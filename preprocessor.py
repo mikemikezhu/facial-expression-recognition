@@ -48,10 +48,12 @@ class Preprocessor:
                         # Image file
                         image_file = Image.open(path)
                         image = numpy.array(image_file)
+                        pixels = '-'.join(map(str, image.flat))
 
                         # Write to CSV file
-                        row = [label, image]
+                        row = [label, pixels]
                         train_writer.writerow(row)
+
 
 # Preprocess data
 preprocessor = Preprocessor()
