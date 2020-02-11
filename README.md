@@ -11,7 +11,7 @@ Recently, I have developed a mobile game, [Best Actor](https://github.com/mikemi
 Considering that the mobile game relies on computer vision model to make predictions on human facial expressions, we need to download the dataset to train the computer vision model. Here we use FER2013 dataset in [Challenges in Representation Learning: Facial Expression Recognition Challenge](https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data) in Kaggle. Therefore, let's configure Kaggle API and download the training dataset.
 
 
-```
+```python
 import os
 
 # Configure kaggle
@@ -66,7 +66,7 @@ os.chdir('data')
 The image dataset downloaded from Kaggle is in ".csv" file format. Therefore, we need to load the "train.csv" file, and convert it to numpy array. The training images and labels are saved in "x_train" and "y_train" respectively.
 
 
-```
+```python
 import csv
 import numpy
 
@@ -117,7 +117,7 @@ print('y_train shape: {0}'.format(y_train.shape))
 The image dataset provided by Kaggle contains 7 different facial expression categories (0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral). The distogram of the facial expression categories is displayed as follows.
 
 
-```
+```python
 import matplotlib.pyplot as plt
 %matplotlib inline
 
@@ -147,7 +147,7 @@ plt.show()
 Then, let's show one of the images in the dataset. Each image is grey-scale and contains 48 x 48 pixels.
 
 
-```
+```python
 image = x_train[0]
 label = y_train[0]
 
@@ -174,7 +174,7 @@ plt.imshow(image, cmap='gray')
 Next, we need to split the dataset into training set and test set. Here, we choose 20% of the dataset as test set, and the rest of the dataset as train set.
 
 
-```
+```python
 from sklearn.model_selection import train_test_split
 
 # Split dataset into train set and test set
@@ -197,7 +197,7 @@ print(x_test.shape)
 Next, we need to train the model with the image dataset. Here we use Tensorlow as backend to train the model. Therefore, we need to import all the required packages before the training process.
 
 
-```
+```python
 %tensorflow_version 2.x
 import tensorflow as tf
 
@@ -233,7 +233,7 @@ The diagram of the model is displayed as follows.
 Our model contains 5 stacks of layers. In each of the first 4 stacks of layers, there are 2 convolutional layer followed by 1 pooling layer. Besides, we use batch normalization to speed up training and dropout to prevent over-fitting. Then we have one stack of 3 fully-connected layers, followed by a Softmax activation function, which generates the probability of the facial expression categories. Finally, we compile our model using Adam optimizer with a certain learning rate. Considering that we are dealing with classification issue, we will use `sparse_categorical_crossentropy` as the loss function.
 
 
-```
+```python
 cnn_model = Sequential()
 
 # 1st convolution layer
@@ -366,7 +366,7 @@ cnn_model.summary()
 Next, we will train our model. Here we use Early Stopping strategy, which will stop the training process when there is no improvement in the validation accuracy. Besides, we will also reduce the learning rate by a specific factor if there is a plateau is detected in the validation loss.
 
 
-```
+```python
 # Callbacks
 early_stopping = EarlyStopping(monitor='val_accuracy', patience=10)
 reduce_learning_rate = ReduceLROnPlateau(monitor='val_loss', factor=0.9, patience=5)
@@ -468,7 +468,7 @@ history = cnn_model.fit(x_train,
 After the training process is completed, let's display the accuracy diagram of the training accuracy and validation accuracy.
 
 
-```
+```python
 # Show accuracy diagram
 plt.title('Model Accuracy')
 plt.plot(history.history['accuracy'], label='accuracy')
@@ -492,7 +492,7 @@ We will try to improve our model to increase the validation accuracy. Here we ha
 Before we improve our model, let's evaluate our model by using test set. We can see the score before improvement is around 64%.
 
 
-```
+```python
 # Evaluate the model before improvement
 _, score_before_improvement = cnn_model.evaluate(x_test, y_test)
 print('Score before improvement: {}'.format(score_before_improvement))
@@ -505,7 +505,7 @@ print('Score before improvement: {}'.format(score_before_improvement))
 Next, we will improve our model by generating hard data. Specifically, instead of training the model over and over again, we will select the images which are incorrectly labelled by the model, and train the model on these specific images. Therefore, let's use our model to make predictions first, and put the incorrect ones into the array of hard data for further training.
 
 
-```
+```python
 # Generate hard data
 hard_images = []
 hard_labels = []
@@ -536,7 +536,7 @@ print(y_hard.shape)
 Next, we will train our model on these specific images which are previously incorrectly labelled by our model.
 
 
-```
+```python
 # Train the model on hard data
 x_hard_train, x_hard_test, y_hard_train, y_hard_test = train_test_split(x_hard, y_hard, test_size=0.2)
 history = cnn_model.fit(x_hard_train,
@@ -575,7 +575,7 @@ history = cnn_model.fit(x_hard_train,
 Of course, this might cause the over-fitting issue on these incorrectly labelled images. Therefore, we will train the model again to balance out. Besides, we will also perform data augmentation to diversify our training dataset by rotating, shifting, zooming or flipping the images, which will also improve our model to overcome the over-fitting issue and learn the generic features of each image.
 
 
-```
+```python
 # Perform data augmentation
 data_generator = ImageDataGenerator(featurewise_center=False,
                                     featurewise_std_normalization=False,
@@ -673,7 +673,7 @@ history = cnn_model.fit(flow,
 Finally, let's evaluate our model again after improvement. Previously, we have the validation accuracy at around 64%. Nevertheless, the validation accuracy has increased to around **68%**.
 
 
-```
+```python
 # Evaluate the model after improvement
 _, score_after_improvement = cnn_model.evaluate(x_test, y_test)
 print('Score after improvement: {}'.format(score_after_improvement))
@@ -692,7 +692,7 @@ If we compare with the Kaggle competition, our score is around 68% and can be ra
 Next, we will make predictions and create the confusion matrix. Since FER2013 dataset does NOT provide too many images labelled with "Disgust", we can tell from the confusion matrix that, the model might not be able to classify the images labelled with "Disgust" very well.
 
 
-```
+```python
 !pip install -U mlxtend > /dev/null 2>&1
 
 from mlxtend.plotting import plot_confusion_matrix
@@ -720,7 +720,7 @@ Then, let's try some other human facial expression images found online.
 
 
 
-```
+```python
 # Download into data folder
 os.chdir('/content/data')
 
@@ -730,7 +730,7 @@ os.chdir('/content/data')
 ```
 
 
-```
+```python
 from tensorflow.keras.preprocessing import image
 
 def predict_facial_expression(image_path):
@@ -762,7 +762,7 @@ def predict_facial_expression(image_path):
 ```
 
 
-```
+```python
 # Happy
 predict_facial_expression('happy.jpg')
 ```
@@ -776,7 +776,7 @@ predict_facial_expression('happy.jpg')
 
 
 
-```
+```python
 # Sad
 predict_facial_expression('sad.jpg')
 ```
@@ -790,7 +790,7 @@ predict_facial_expression('sad.jpg')
 
 
 
-```
+```python
 # Surprise
 predict_facial_expression('surprise.jpg')
 ```
@@ -808,7 +808,7 @@ predict_facial_expression('surprise.jpg')
 Last but not least, let's export the model, and save our TensorFlow and TensorFlow Lite model.
 
 
-```
+```python
 # Create build folder
 os.chdir('/content/')
 !rm -rf build
@@ -821,13 +821,13 @@ os.chdir('build')
 
 
 
-```
+```python
 # Save tensorflow model
 cnn_model.save('FER2013.h5')
 ```
 
 
-```
+```python
 # Save tensorflow lite model
 converter = tf.lite.TFLiteConverter.from_keras_model(cnn_model)
 tflite_model = converter.convert()
