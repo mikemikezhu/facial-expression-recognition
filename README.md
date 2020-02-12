@@ -228,7 +228,7 @@ By referring to VGGNet architecture, we have designed the computer vision model 
 
 The diagram of the model is displayed as follows.
 
-![cnn](https://drive.google.com/uc?id=1jjORxRgvEDDMLZ-mX5JkCnUWUFn7IHpL)
+![cnn](./Resources/cnn.png)
 
 Our model contains 5 stacks of layers. In each of the first 4 stacks of layers, there are 2 convolutional layer followed by 1 pooling layer. Besides, we use batch normalization to speed up training and dropout to prevent over-fitting. Then we have one stack of 3 fully-connected layers, followed by a Softmax activation function, which generates the probability of the facial expression categories. Finally, we compile our model using Adam optimizer with a certain learning rate. Considering that we are dealing with classification issue, we will use `sparse_categorical_crossentropy` as the loss function.
 
@@ -685,7 +685,7 @@ print('Score after improvement: {}'.format(score_after_improvement))
 
 If we compare with the Kaggle competition, our score is around 68% and can be ranked within the top 5.
 
-![kaggle](https://drive.google.com/uc?id=1UbeKmOjh3_3NnSXOmmNMclAQeiqnkCeq)
+![kaggle](./Resources/kaggle.png)
 
 ### Evaluate Model
 
